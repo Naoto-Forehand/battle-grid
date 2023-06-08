@@ -1,0 +1,11 @@
+**/Library/
+**/Logs/
+**/.vs/
+**/.idea/
+**/Temp/
+**/obj/
+**/UserSettings/
+
+**/Assembly-*
+**/*.csproj
+**/*.sln

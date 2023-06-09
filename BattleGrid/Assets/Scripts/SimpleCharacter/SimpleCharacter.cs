@@ -9,9 +9,13 @@ public class SimpleCharacter
     public int Attack { get { return _attack; } }
     private int _attack;
 
-    public SimpleCharacter(int health, int attack)
+    public int Defense { get { return _defense; } }
+    private int _defense;
+
+    public SimpleCharacter(int health, int attack, int defense)
     {
         _health = health;
         _attack = attack;
+        _defense = defense;
     }
 }

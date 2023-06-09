@@ -16,6 +16,8 @@ public class SimpleCharacterView : MonoBehaviour
     private int _defaultHealth = 100;
     [SerializeField]
     private int _defaultAttack = 10;
+    [SerializeField]
+    private int _defaultDefense = 10;
 
     public SimpleCharacterState SimpleCharacterState { get { return _simpleCharacterState; } }
     private SimpleCharacterState _simpleCharacterState = SimpleCharacterState.NONE;
@@ -33,7 +35,7 @@ public class SimpleCharacterView : MonoBehaviour
     {
         if (SimpleCharacter == null)
         {
-            SimpleCharacter = new SimpleCharacter(_defaultHealth, _defaultAttack);
+            SimpleCharacter = new SimpleCharacter(_defaultHealth, _defaultAttack, _defaultDefense);
         }
 
         _simpleCharacterState = SimpleCharacterState.UNSELECTED;
@@ -68,6 +70,24 @@ public class SimpleCharacterView : MonoBehaviour
     {
         Debug.Log($"{name} is Attacking");
         _characterModel.GetComponent<Animator>().SetTrigger("attack");
+    }
+
+    public void Parry()
+    {
+        Debug.Log($"{name} is trying to Parry");
+        // TODO: Initiate some lazy element to receive then Trigger Attack animation
+    }
+
+    public void Defend()
+    {
+        Debug.Log($"{name} is Defending");
+        // TODO: Initiate something to indicate defending
+    }
+
+    public void TriggerHit()
+    {
+        Debug.Log($"{name} has been hit");
+        _characterModel.GetComponent<Animator>().SetTrigger("hit");
     }
 
     private IEnumerator SetSelected()
@@ -139,6 +159,14 @@ public class SimpleCharacterView : MonoBehaviour
         else
         {
             throw new MissingReferenceException("Missing Target or invalid Target object");
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyUp(KeyCode.A) && name.Contains("01"))
+        {
+            _characterModel.GetComponent<Animator>().SetTrigger("attack");
         }
     }
 }

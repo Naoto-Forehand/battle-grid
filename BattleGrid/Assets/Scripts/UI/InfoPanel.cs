@@ -12,6 +12,14 @@ public class InfoPanel : MonoBehaviour
     private PanelState _nextState = PanelState.NONE;
 
     [SerializeField]
+    private RoundInfoPanel _roundInfoPanel;
+    public RoundInfoPanel RoundInfoPanel { get { return _roundInfoPanel; } }
+
+    [SerializeField]
+    private SimpleCharacterPanel[] _simpleCharacterPanels;
+    public SimpleCharacterPanel[] CharacterPanels { get { return _simpleCharacterPanels; } }
+
+    [SerializeField]
     private Vector3 _hiddenPosition;
     [SerializeField]
     private Vector3 _shownPosition;

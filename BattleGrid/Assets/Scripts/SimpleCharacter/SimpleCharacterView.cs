@@ -6,7 +6,8 @@ using System.Linq;
 public class SimpleCharacterView : MonoBehaviour
 {
     [SerializeField]
-    private SimpleCharacter SimpleCharacter;
+    private SimpleCharacter _simpleCharacter;
+    public SimpleCharacter SimpleCharacter { get { return _simpleCharacter; } }
 
     [SerializeField]
     private GameObject _characterModel;
@@ -36,10 +37,10 @@ public class SimpleCharacterView : MonoBehaviour
 
     protected virtual void SetDefaults()
     {
-        if (SimpleCharacter == null)
+        if (_simpleCharacter == null)
         {
             SimpleCharacterFacade facade = new SimpleCharacterFacade { Name = gameObject.name, Attack = _defaultAttack, Defense = _defaultDefense, Health = _defaultHealth };
-            SimpleCharacter = new SimpleCharacter(facade);
+            _simpleCharacter = new SimpleCharacter(facade);
         }
 
         _simpleCharacterState = SimpleCharacterState.UNSELECTED;

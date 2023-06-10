@@ -19,6 +19,9 @@ public class TurnManager : MonoBehaviour
 
     private bool _waitingForInput = false;
 
+    public event Action<int> OnRoundUpdate;
+    public event Action<string[]> OnRoundReport;
+
     private void Awake()
     {
         Initialize();
@@ -32,6 +35,11 @@ public class TurnManager : MonoBehaviour
     private void Initialize()
     {
         _charactersInScene = _characterContainerHelper?.CharactersInScene;
+        if (_uiEventRouter != null)
+        {
+            _uiEventRouter.SubscribePanels(_characterContainerHelper);
+            _uiEventRouter.SubscribeRoundInfo(this);
+        }
     }
 
     private SimpleCharacterView[] GetTurnOrder()
@@ -64,6 +72,7 @@ public class TurnManager : MonoBehaviour
     private void StartRound(int round)
     {
         round++;
+        OnRoundUpdate?.Invoke(round);
         _roundActions = new List<Action>();
         _turnSelectionIndex = 0;
         _currentRoundOrder = GetTurnOrder();
@@ -94,11 +103,17 @@ public class TurnManager : MonoBehaviour
 
     private IEnumerator ProcessActions()
     {
+        string[] roundReport = new string[_roundActions.Count];
         for (int index = 0; index < _roundActions.Count; ++index)
         {
-            yield return StartCoroutine(ProcessAction(_roundActions[index]));
+            var action = _roundActions[index];
+            var actor = action.Target.ToString();
+            var method = action.Method.ToString();
+            roundReport.SetValue($"{actor} {method}", index);
+            yield return StartCoroutine(ProcessAction(action));
         }
 
+        OnRoundReport?.Invoke(roundReport);
         StartRound(_currentRound);
     }
 

@@ -1,18 +1,23 @@
 ﻿using System;
+using UnityEngine;
 
 [Serializable]
 public class SimpleCharacter
 {
     public string Name { get { return _name; } }
+    [SerializeField]
     private string _name;
 
     public int Health { get { return _health; } }
+    [SerializeField]
     private int _health;
 
     public int Attack { get { return _attack; } }
+    [SerializeField]
     private int _attack;
 
     public int Defense { get { return _defense; } }
+    [SerializeField]
     private int _defense;
 
     public SimpleCharacterStatus Status { get { return _status; } }

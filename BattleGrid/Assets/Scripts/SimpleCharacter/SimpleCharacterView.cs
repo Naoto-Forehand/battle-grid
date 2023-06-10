@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Linq;
 
@@ -24,8 +25,10 @@ public class SimpleCharacterView : MonoBehaviour
 
     private bool _isUpdatingViewState = false;
     private Color _defaultColor;
-    private const float DEFAULT_ANIMATION_TIME = 1.5f; 
-     
+    private const float DEFAULT_ANIMATION_TIME = 1.5f;
+
+    public event Action<SimpleCharacter> OnCharacterUpdate;
+
     private void Awake()
     {
         SetDefaults();
@@ -35,7 +38,8 @@ public class SimpleCharacterView : MonoBehaviour
     {
         if (SimpleCharacter == null)
         {
-            SimpleCharacter = new SimpleCharacter(_defaultHealth, _defaultAttack, _defaultDefense);
+            SimpleCharacterFacade facade = new SimpleCharacterFacade { Name = gameObject.name, Attack = _defaultAttack, Defense = _defaultDefense, Health = _defaultHealth };
+            SimpleCharacter = new SimpleCharacter(facade);
         }
 
         _simpleCharacterState = SimpleCharacterState.UNSELECTED;

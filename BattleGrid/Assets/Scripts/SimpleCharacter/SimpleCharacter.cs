@@ -23,6 +23,9 @@ public class SimpleCharacter
     public SimpleCharacterStatus Status { get { return _status; } }
     private SimpleCharacterStatus _status;
 
+    private int? _cachedDamage = null;
+    private int? _cachedDefense = null;
+
     public SimpleCharacter(SimpleCharacterFacade simpleCharacter)
     {
         _name = simpleCharacter.Name;
@@ -32,9 +35,31 @@ public class SimpleCharacter
         SetStatus(SimpleCharacterStatus.NONE);
     }
 
-    public void HandleReceivingDamage(int incomingDamage)
+    public void CacheDamage(int incomingDamage)
+    {
+        _cachedDamage = incomingDamage;
+    }
+
+    public void CacheDefense(int defenseBoost)
+    {
+        _cachedDefense = defenseBoost;
+    }
+
+    public void HandleReceivingDamage()
     {
         // TODO: Calculate damage received and remove appropriately
+        if (_cachedDamage.HasValue)
+        {
+            // TODO: More complex calculation here, for now simple
+            var totalDefense = (_cachedDefense.HasValue) ? _defense + _cachedDefense.Value : _defense;
+            _health -= (_cachedDamage.Value - totalDefense);
+            if (_health <= 0)
+            {
+                SetStatus(SimpleCharacterStatus.DEAD);
+            }
+            _cachedDamage = null;
+            _cachedDefense = null;
+        }
     }
 
     public void HandleDealingDamage(Action<int> damageReceiver)

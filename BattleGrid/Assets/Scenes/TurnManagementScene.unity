@@ -161,7 +161,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 74.5}
+  m_AnchoredPosition: {x: 0, y: 74.499985}
   m_SizeDelta: {x: 450, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &151325893
@@ -3340,7 +3340,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6925134604173556456, guid: e89255586aaa14d04a9b42ee44ed557b, type: 3}
       propertyPath: _simpleCharacter._attack
-      value: 20
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 6925134604173556456, guid: e89255586aaa14d04a9b42ee44ed557b, type: 3}
       propertyPath: _simpleCharacter._health

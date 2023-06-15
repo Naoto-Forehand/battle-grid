@@ -24,9 +24,21 @@ public class SimpleCharacterView : MonoBehaviour
     public SimpleCharacterState SimpleCharacterState { get { return _simpleCharacterState; } }
     private SimpleCharacterState _simpleCharacterState = SimpleCharacterState.NONE;
 
+    [SerializeField]
+    private Color[] _stateColors = new Color[] { Color.white, Color.green, Color.red };
+
+    private enum _colors
+    {
+        DEFAULT = 0,
+        SELECTED = 1,
+        DEFENDING = 2
+    }
+
     private bool _isUpdatingViewState = false;
     private Color _defaultColor;
     private const float DEFAULT_ANIMATION_TIME = 1.5f;
+
+    private SimpleCharacterView _target;
 
     public event Action<SimpleCharacter> OnCharacterUpdate;
 
@@ -71,10 +83,22 @@ public class SimpleCharacterView : MonoBehaviour
         }
     }
 
+    public void SetTarget(SimpleCharacterView target)
+    {
+        _target = target;
+    }
+
     public void Attack()
     {
-        Debug.Log($"{name} is Attacking");
-        _characterModel.GetComponent<Animator>().SetTrigger("attack");
+        if (!_simpleCharacter.Status.HasFlag(SimpleCharacterStatus.DEAD))
+        {
+            Debug.Log($"{name} is Attacking");
+            _characterModel.GetComponent<Animator>().SetTrigger("attack");
+            //TODO: For now send damage here
+            _target.SimpleCharacter.CacheDamage(_simpleCharacter.Attack);
+        }
+        
+        _target = null;
     }
 
     public void Parry()
@@ -85,14 +109,39 @@ public class SimpleCharacterView : MonoBehaviour
 
     public void Defend()
     {
+        Debug.Log($"{name} is on Defense");
+    }
+
+    public void SetDefend(SimpleCharacterView target)
+    {
         Debug.Log($"{name} is Defending");
         // TODO: Initiate something to indicate defending
+        target.SimpleCharacter.CacheDefense(_simpleCharacter.Defense);
+        StartCoroutine(SetDefending());
     }
 
     public void TriggerHit()
     {
         Debug.Log($"{name} has been hit");
-        _characterModel.GetComponent<Animator>().SetTrigger("hit");
+        var renderer = GetSpriteRenderer(_characterBackground);
+        if (renderer.color != _stateColors[(int)_colors.DEFENDING])
+        {
+            _characterModel.GetComponent<Animator>().SetTrigger("hit");
+        }
+        
+        _simpleCharacter.HandleReceivingDamage();
+
+        if (_simpleCharacter.Health <= 0)
+        {
+            _characterModel.GetComponent<Animator>().SetTrigger("death");
+        }
+
+        if (renderer.color != _defaultColor)
+        {
+            renderer.color = _defaultColor;
+        }
+
+        OnCharacterUpdate?.Invoke(_simpleCharacter);
     }
 
     private IEnumerator SetSelected()
@@ -100,7 +149,7 @@ public class SimpleCharacterView : MonoBehaviour
         _isUpdatingViewState = true;
         var spriteRenderer = GetSpriteRenderer(_characterBackground);
         var animationTime = DEFAULT_ANIMATION_TIME;
-        var targetColor = Color.green;
+        var targetColor = _stateColors[(int)_colors.SELECTED];
 
         yield return StartCoroutine(LerpSpriteColor(spriteRenderer, animationTime, targetColor));
 
@@ -114,6 +163,19 @@ public class SimpleCharacterView : MonoBehaviour
         var spriteRenderer = GetSpriteRenderer(_characterBackground);
         var animationTime = DEFAULT_ANIMATION_TIME;
         var targetColor = _defaultColor;
+
+        yield return StartCoroutine(LerpSpriteColor(spriteRenderer, animationTime, targetColor));
+
+        _isUpdatingViewState = false;
+        yield return null;
+    }
+
+    private IEnumerator SetDefending()
+    {
+        _isUpdatingViewState = true;
+        var spriteRenderer = GetSpriteRenderer(_characterBackground);
+        var animationTime = DEFAULT_ANIMATION_TIME;
+        var targetColor = _stateColors[(int)_colors.DEFENDING];
 
         yield return StartCoroutine(LerpSpriteColor(spriteRenderer, animationTime, targetColor));
 

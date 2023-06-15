@@ -29,7 +29,7 @@ public class TurnManager : MonoBehaviour
 
     private void Start()
     {
-        StartRound(_currentRound);
+        StartRound(ref _currentRound);
     }
 
     private void Initialize()
@@ -69,9 +69,9 @@ public class TurnManager : MonoBehaviour
         return turnOrder;
     }
 
-    private void StartRound(int round)
+    private void StartRound(ref int round)
     {
-        round++;
+        round += 1;
         OnRoundUpdate?.Invoke(round);
         _roundActions = new List<Action>();
         _turnSelectionIndex = 0;
@@ -114,7 +114,7 @@ public class TurnManager : MonoBehaviour
         }
 
         OnRoundReport?.Invoke(roundReport);
-        StartRound(_currentRound);
+        StartRound(ref _currentRound);
     }
 
     private IEnumerator ProcessAction(Action action)
@@ -130,7 +130,17 @@ public class TurnManager : MonoBehaviour
         {
             if (Input.GetKeyUp(KeyCode.UpArrow))
             {
+                //TODO: Actual target selection, for now, just other available target
+                var targetIndex = (_turnSelectionIndex == 0) ? 1 : 0;
+                var target = _currentRoundOrder[targetIndex];
+                _currentRoundOrder[_turnSelectionIndex].SetTarget(target);
                 _roundActions.Add(_currentRoundOrder[_turnSelectionIndex].Attack);
+                AdvanceThroughOrder();
+            }
+            else if (Input.GetKeyUp(KeyCode.DownArrow))
+            {
+                _currentRoundOrder[_turnSelectionIndex].SetDefend(_currentRoundOrder[_turnSelectionIndex]);
+                _roundActions.Add(_currentRoundOrder[_turnSelectionIndex].Defend);
                 AdvanceThroughOrder();
             }
         }
